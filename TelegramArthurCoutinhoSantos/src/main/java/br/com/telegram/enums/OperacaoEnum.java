@@ -9,10 +9,11 @@ public enum OperacaoEnum {
 	naoEntendi("Não entendi", 0),
 	errologin("Não entendi\nPor favor, digite seu CPF corretamente, com pontos ou sem: ", 1),
 	bemVindo("Bem vindo\nComo posso te ajudar? ", 2),
-	menu("Menu, digite uma opção:\n /depositar ", 3),
+	menu("Digite uma opção:\n /depositar\n /sacar", 3),
 	
-	depositar("Digite o valor que deseja depositar: ", 4);
-
+	depositar("Digite o valor que deseja depositar: ", 4),
+	sacar("Digite o valor que deseja sacar: ", 5);
+	
 	private static Map map = new HashMap<>();
 	private String operacaoMensagem;
 	private Integer operacao;
