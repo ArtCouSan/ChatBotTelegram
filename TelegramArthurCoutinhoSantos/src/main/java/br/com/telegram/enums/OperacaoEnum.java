@@ -6,13 +6,15 @@ import java.util.Map;
 public enum OperacaoEnum {
 
 	operacaoEmAberto("Termine a operação anterior ou encerre com o comando: /menu\n", -1),
-	naoEntendi("Não entendi", 0),
+	naoEntendi("Não entendi, se deseja voltar para o menu digite: /menu", 0),
 	errologin("Não entendi\nPor favor, digite seu CPF corretamente, com pontos ou sem: ", 1),
-	bemVindo("Bem vindo\nComo posso te ajudar? ", 2),
-	menu("Digite uma opção:\n /depositar\n /sacar", 3),
-	
+	bemVindo("Bem vindo\nComo posso te ajudar? \nSe deseja ver as opções digite: /menu ", 2),
+	menu("Digite uma opção:\n /depositar\n /sacar \n /saldo \n /transferirPara", 3),
 	depositar("Digite o valor que deseja depositar: ", 4),
-	sacar("Digite o valor que deseja sacar: ", 5);
+	sacar("Digite o valor que deseja sacar: ", 5),
+	saldo("Saldo em conta: ", 6),
+	transferir("Digite o valor que deseja transferir: ", 7),
+	transferirPara("Digite o cpf para que deseja transferir: ", 8);
 	
 	private static Map map = new HashMap<>();
 	private String operacaoMensagem;

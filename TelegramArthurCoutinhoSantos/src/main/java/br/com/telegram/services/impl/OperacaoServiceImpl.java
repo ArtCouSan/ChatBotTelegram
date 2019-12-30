@@ -1,19 +1,21 @@
 package br.com.telegram.services.impl;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeMap;
 
 import br.com.caelum.stella.validation.CPFValidator;
+import br.com.telegram.db.OperacoesDb;
 import br.com.telegram.enums.OperacaoEnum;
 import br.com.telegram.services.OperacaoService;
 
 public class OperacaoServiceImpl implements OperacaoService {
 
 	private static MensagensServiceImpl mensagensService = new MensagensServiceImpl();
-
+	private static OperacoesDb operacaoDb = new OperacoesDb();
 	private static Integer operacaoId = 0;
 	private static Boolean logado = false;
 	private static Boolean primeiraVez = true;
@@ -29,30 +31,15 @@ public class OperacaoServiceImpl implements OperacaoService {
 		// Verifica se esta logado
 		if (logado) {
 
-			// Verifica se nao tem operação
+			// Verifica se pedido operação
 			if (!operacoes.isEmpty()) {
 
-				// Verifica se tem operação em aberto e apresenta menu
-				if (operacaoId.compareTo(OperacaoEnum.menu.getOperacao()) != 0 && !(menu(operacoes.get(0)))) {
-
-					return OperacaoEnum.operacaoEmAberto.getOperacaoMensagem()
-							.concat(OperacaoEnum.valueOf(operacaoId).getOperacaoMensagem());
-
-					// Retorna operação
-				} else {
-
-					return operacoes(operacoes.get(0));
-
-				}
+				return operacaoComComando(operacoes);
 
 			} else {
 
-				// Verifica se tem operação em abertp
-				if (operacaoId.compareTo(OperacaoEnum.menu.getOperacao()) != 0) {
-
-					return operacaoExecutar(operacaoId, mensagem);
-
-				}
+				// Verifica mensagem ou executa operacao
+				return operacaoSemComando(mensagem, palavras);
 
 			}
 
@@ -62,10 +49,111 @@ public class OperacaoServiceImpl implements OperacaoService {
 
 		}
 
-		return null;
+	}
+
+	/**
+	 * Se usuario não usa um comando ou quer executar uma operacao
+	 * 
+	 * @param mensagem
+	 * @return mensagem
+	 */
+	private String operacaoSemComando(String mensagem, List<String> palavras) {
+
+		// Verifica se executa operacao
+		if (operacaoId.compareTo(OperacaoEnum.menu.getOperacao()) != 0) {
+
+			return executar(operacaoId, mensagem);
+
+		} else {
+
+			return verificarOqueUsuarioQuerPelaMensagem(palavras);
+
+		}
 
 	}
 
+	/**
+	 * Se usuario use um comando
+	 * 
+	 * @param operacoes
+	 * @return
+	 */
+	private String operacaoComComando(List<String> operacoes) {
+
+		// Verifica se tem operação em aberto e apresenta menu
+		if (operacaoId.compareTo(OperacaoEnum.menu.getOperacao()) != 0 && !(menu(operacoes.get(0)))) {
+
+			return OperacaoEnum.operacaoEmAberto.getOperacaoMensagem()
+					.concat(OperacaoEnum.valueOf(operacaoId).getOperacaoMensagem());
+
+		} else {
+
+			return operacoes(operacoes.get(0));
+
+		}
+
+	}
+
+	public String verificarOqueUsuarioQuerPelaMensagem(List<String> palavras) {
+
+		Integer querDepositar = 0;
+		Integer querSacar = 0;
+		Integer querTransferir = 0;
+		Integer querSaldo = 0;
+
+		for (String palavra : palavras) {
+
+			querDepositar = existeSinonimo(palavra, querDepositar, operacaoDb.depositar);
+			querSacar = existeSinonimo(palavra, querSacar, operacaoDb.sacar);
+			querTransferir = existeSinonimo(palavra, querTransferir, operacaoDb.transferir);
+			querSaldo = existeSinonimo(palavra, querSaldo, operacaoDb.saldo);
+
+		}
+
+		TreeMap<Integer, String> opcoes = new TreeMap<Integer, String>();
+		opcoes.put(querDepositar, "depositar");
+		opcoes.put(querSacar, "sacar");
+		opcoes.put(querTransferir, "transferirPara");
+		opcoes.put(querSaldo, "saldo");
+
+		if (opcoes.size() == 1) {
+
+			return OperacaoEnum.naoEntendi.getOperacaoMensagem();
+
+		} else {
+
+			return operacoes(opcoes.get(opcoes.lastKey()));
+
+		}
+
+	}
+
+	/**
+	 * Verifica se a palavra contem sinonimo
+	 * 
+	 * @param palavra
+	 * @param querOque
+	 * @param sinonimos
+	 * @return se tem o que quer
+	 */
+	public Integer existeSinonimo(String palavra, Integer querOque, List<String> sinonimos) {
+
+		Boolean existe = sinonimos.contains(palavra);
+
+		if (existe) {
+			querOque++;
+		}
+
+		return querOque;
+
+	}
+
+	/**
+	 * Realiza login
+	 * 
+	 * @param mensagem
+	 * @return
+	 */
 	public String login(String mensagem) {
 
 		if (primeiraVez) {
@@ -92,9 +180,16 @@ public class OperacaoServiceImpl implements OperacaoService {
 
 	}
 
+	/**
+	 * Valida o cpf
+	 * 
+	 * @param cpf
+	 * @return
+	 */
 	public boolean validaCPF(String cpf) {
 
 		CPFValidator validador = new CPFValidator();
+		cpf = cpf.replaceAll("[.-]", "");
 
 		if (validador.isEligible(cpf)) {
 
@@ -107,10 +202,10 @@ public class OperacaoServiceImpl implements OperacaoService {
 	}
 
 	/**
-	 * Retorna a mensagem de entrada para uma operacao
+	 * Menu de operações
 	 * 
 	 * @param mensagem
-	 * @return
+	 * @return a operação
 	 */
 	public String operacoes(String mensagem) {
 
@@ -120,13 +215,20 @@ public class OperacaoServiceImpl implements OperacaoService {
 			operacaoId = OperacaoEnum.depositar.getOperacao();
 			return OperacaoEnum.depositar.getOperacaoMensagem();
 		case sacar:
-			
+
 			operacaoId = OperacaoEnum.sacar.getOperacao();
 			return OperacaoEnum.sacar.getOperacaoMensagem();
 		case menu:
 
 			operacaoId = OperacaoEnum.menu.getOperacao();
 			return OperacaoEnum.menu.getOperacaoMensagem();
+		case saldo:
+
+			return OperacaoEnum.saldo.getOperacaoMensagem().concat(tranformarMoeda(saldo));
+		case transferirPara:
+
+			operacaoId = OperacaoEnum.transferirPara.getOperacao();
+			return OperacaoEnum.transferirPara.getOperacaoMensagem();
 		default:
 			return OperacaoEnum.naoEntendi.getOperacaoMensagem();
 		}
@@ -140,7 +242,7 @@ public class OperacaoServiceImpl implements OperacaoService {
 	 * @param valor
 	 * @return
 	 */
-	public String operacaoExecutar(Integer idOperacao, String valorString) {
+	public String executar(Integer idOperacao, String valorString) {
 
 		try {
 
@@ -157,26 +259,27 @@ public class OperacaoServiceImpl implements OperacaoService {
 				switch (OperacaoEnum.valueOf(idOperacao)) {
 				case depositar:
 
-					saldo = saldo.add(valor);
-					mensagem = mensagem.concat(" depositado, retornando ao menu... \n")
-							.concat(OperacaoEnum.menu.getOperacaoMensagem());
-					operacaoId = OperacaoEnum.menu.getOperacao();
+					mensagem = depositar(valor, mensagem);
 
 					break;
 				case sacar:
 
-					if (valorEmCaixa(valor)) {
+					mensagem = sacar(valor, mensagem);
 
-						saldo = saldo.subtract(valor);
-						mensagem = mensagem.concat(" sacado, retornando ao menu... \n")
-								.concat(OperacaoEnum.menu.getOperacaoMensagem());
-						operacaoId = OperacaoEnum.menu.getOperacao();
+					break;
+				case saldo:
 
-					} else {
+					mensagem = saldo();
 
-						return "Valor em conta inferior";
+					break;
+				case transferir:
 
-					}
+					mensagem = transferir(valor, mensagem);
+
+					break;
+				case transferirPara:
+
+					mensagem = transferirPara(valorString);
 
 					break;
 				default:
@@ -188,22 +291,129 @@ public class OperacaoServiceImpl implements OperacaoService {
 
 			} else {
 
-				return "Valor negativo";
+				return "Valor negativo, se deseja voltar para o menu digite /menu";
 
 			}
 
 		} catch (Exception e) {
 
-			return "Valor incorreto";
+			return "Valor incorreto, se deseja voltar para o menu digite /menu";
 
 		}
 
 	}
 
 	/**
-	 * Verifica se valor eh maior que o em conta
+	 * Pegar saldo
+	 * 
+	 * @return saldo
+	 */
+	private String saldo() {
+
+		return "Saldo em conta ".concat(tranformarMoeda(saldo));
+
+	}
+
+	/**
+	 * Verifica usuario que recebe tranferencia
+	 * 
+	 * @param valorString
+	 * @return
+	 */
+	private String transferirPara(String valorString) {
+
+		String mensagem;
+
+		if (validaCPF(valorString)) {
+
+			operacaoId = OperacaoEnum.transferir.getOperacao();
+			mensagem = OperacaoEnum.transferir.getOperacaoMensagem();
+
+		} else {
+
+			mensagem = "CPF inválido, se deseja voltar para o menu digite /menu";
+
+		}
+
+		return mensagem;
+
+	}
+
+	/**
+	 * Transferir
 	 * 
 	 * @param valor
+	 * @param mensagem
+	 * @return
+	 */
+	private String transferir(BigDecimal valor, String mensagem) {
+
+		if (valorEmCaixa(valor)) {
+
+			saldo = saldo.subtract(valor);
+			mensagem = mensagem.concat(" tranferido, retornando ao menu... \n")
+					.concat(OperacaoEnum.menu.getOperacaoMensagem());
+			operacaoId = OperacaoEnum.menu.getOperacao();
+
+		} else {
+
+			mensagem = "Valor em conta inferior, se deseja voltar para o menu digite /menu";
+
+		}
+
+		return mensagem;
+
+	}
+
+	/**
+	 * Sacar
+	 * 
+	 * @param valor
+	 * @param mensagem
+	 * @return
+	 */
+	private String sacar(BigDecimal valor, String mensagem) {
+
+		if (valorEmCaixa(valor)) {
+
+			saldo = saldo.subtract(valor);
+			mensagem = mensagem.concat(" sacado, retornando ao menu... \n")
+					.concat(OperacaoEnum.menu.getOperacaoMensagem());
+			operacaoId = OperacaoEnum.menu.getOperacao();
+
+		} else {
+
+			mensagem = "Valor em conta inferior, se deseja voltar para o menu digite /menu";
+
+		}
+
+		return mensagem;
+
+	}
+
+	/**
+	 * Depositar
+	 * 
+	 * @param valor
+	 * @param mensagem
+	 * @return
+	 */
+	private String depositar(BigDecimal valor, String mensagem) {
+
+		saldo = saldo.add(valor);
+
+		mensagem = mensagem.concat(" depositado, retornando ao menu... \n")
+				.concat(OperacaoEnum.menu.getOperacaoMensagem());
+
+		operacaoId = OperacaoEnum.menu.getOperacao();
+
+		return mensagem;
+
+	}
+
+	/**
+	 * Verifica se valor eh maior que o em conta
+	 * 
 	 * @return
 	 */
 	public boolean valorEmCaixa(BigDecimal valor) {
