@@ -9,12 +9,12 @@ public enum OperacaoEnum {
 	naoEntendi("Não entendi, se deseja voltar para o menu digite: /menu", 0),
 	errologin("Não entendi\nPor favor, digite seu CPF corretamente, com pontos ou sem: ", 1),
 	bemVindo("Bem vindo\nComo posso te ajudar? \nSe deseja ver as opções digite: /menu ", 2),
-	menu("Digite uma opção:\n /depositar\n /sacar \n /saldo \n /transferirPara", 3),
+	menu("Digite uma opção:\n /depositar\n /sacar \n /saldo \n /transferir_para", 3),
 	depositar("Digite o valor que deseja depositar: ", 4),
 	sacar("Digite o valor que deseja sacar: ", 5),
 	saldo("Saldo em conta: ", 6),
 	transferir("Digite o valor que deseja transferir: ", 7),
-	transferirPara("Digite o cpf para que deseja transferir: ", 8);
+	transferir_para("Digite o cpf para que deseja transferir: ", 8);
 	
 	private static Map map = new HashMap<>();
 	private String operacaoMensagem;

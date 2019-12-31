@@ -62,7 +62,7 @@ public class OperacaoServiceImpl implements OperacaoService {
 		// Verifica se executa operacao
 		if (operacaoId.compareTo(OperacaoEnum.menu.getOperacao()) != 0) {
 
-			return executar(operacaoId, mensagem);
+			return executarTransacao(operacaoId, mensagem);
 
 		} else {
 
@@ -81,14 +81,14 @@ public class OperacaoServiceImpl implements OperacaoService {
 	private String operacaoComComando(List<String> operacoes) {
 
 		// Verifica se tem operação em aberto e apresenta menu
-		if (operacaoId.compareTo(OperacaoEnum.menu.getOperacao()) != 0 && !(menu(operacoes.get(0)))) {
+		if (operacaoId.compareTo(OperacaoEnum.menu.getOperacao()) != 0 && !(ehMenu(operacoes.get(0)))) {
 
 			return OperacaoEnum.operacaoEmAberto.getOperacaoMensagem()
 					.concat(OperacaoEnum.valueOf(operacaoId).getOperacaoMensagem());
 
 		} else {
 
-			return operacoes(operacoes.get(0));
+			return menu(operacoes.get(0));
 
 		}
 
@@ -122,7 +122,7 @@ public class OperacaoServiceImpl implements OperacaoService {
 
 		} else {
 
-			return operacoes(opcoes.get(opcoes.lastKey()));
+			return menu(opcoes.get(opcoes.lastKey()));
 
 		}
 
@@ -207,7 +207,7 @@ public class OperacaoServiceImpl implements OperacaoService {
 	 * @param mensagem
 	 * @return a operação
 	 */
-	public String operacoes(String mensagem) {
+	public String menu(String mensagem) {
 
 		switch (OperacaoEnum.valueOf(mensagem)) {
 		case depositar:
@@ -225,10 +225,10 @@ public class OperacaoServiceImpl implements OperacaoService {
 		case saldo:
 
 			return OperacaoEnum.saldo.getOperacaoMensagem().concat(tranformarMoeda(saldo));
-		case transferirPara:
+		case transferir_para:
 
-			operacaoId = OperacaoEnum.transferirPara.getOperacao();
-			return OperacaoEnum.transferirPara.getOperacaoMensagem();
+			operacaoId = OperacaoEnum.transferir_para.getOperacao();
+			return OperacaoEnum.transferir_para.getOperacaoMensagem();
 		default:
 			return OperacaoEnum.naoEntendi.getOperacaoMensagem();
 		}
@@ -242,7 +242,7 @@ public class OperacaoServiceImpl implements OperacaoService {
 	 * @param valor
 	 * @return
 	 */
-	public String executar(Integer idOperacao, String valorString) {
+	public String executarTransacao(Integer idOperacao, String valorString) {
 
 		try {
 
@@ -277,7 +277,7 @@ public class OperacaoServiceImpl implements OperacaoService {
 					mensagem = transferir(valor, mensagem);
 
 					break;
-				case transferirPara:
+				case transferir_para:
 
 					mensagem = transferirPara(valorString);
 
@@ -453,7 +453,7 @@ public class OperacaoServiceImpl implements OperacaoService {
 	 * @param operacao
 	 * @return
 	 */
-	public boolean menu(String operacao) {
+	public boolean ehMenu(String operacao) {
 		return OperacaoEnum.menu.name().equalsIgnoreCase(operacao);
 	}
 
