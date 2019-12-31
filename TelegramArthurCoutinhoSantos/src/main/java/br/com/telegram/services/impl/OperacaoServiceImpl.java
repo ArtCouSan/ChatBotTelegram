@@ -24,28 +24,36 @@ public class OperacaoServiceImpl implements OperacaoService {
 	@Override
 	public String executarOperacao(String mensagem) {
 
-		List<String> mensagens = mensagensService.listarMensagensRecebidas(mensagem);
-		List<String> palavras = mensagensService.listarPalavrasRecebidas(mensagens);
-		List<String> operacoes = mensagensService.extrairOperacoes(palavras);
+		try {
 
-		// Verifica se esta logado
-		if (logado) {
+			List<String> mensagens = mensagensService.listarMensagensRecebidas(mensagem);
+			List<String> palavras = mensagensService.listarPalavrasRecebidas(mensagens);
+			List<String> operacoes = mensagensService.extrairOperacoes(palavras);
 
-			// Verifica se pedido operação
-			if (!operacoes.isEmpty()) {
+			// Verifica se esta logado
+			if (logado) {
 
-				return operacaoComComando(operacoes);
+				// Verifica se pedido operação
+				if (!operacoes.isEmpty()) {
+
+					return operacaoComComando(operacoes);
+
+				} else {
+
+					// Verifica mensagem ou executa operacao
+					return operacaoSemComando(mensagem, palavras);
+
+				}
 
 			} else {
 
-				// Verifica mensagem ou executa operacao
-				return operacaoSemComando(mensagem, palavras);
+				return login(mensagem);
 
 			}
 
-		} else {
-
-			return login(mensagem);
+		} catch (Exception e) {
+			
+			return "Não entendi";
 
 		}
 
@@ -111,10 +119,10 @@ public class OperacaoServiceImpl implements OperacaoService {
 		}
 
 		TreeMap<Integer, String> opcoes = new TreeMap<Integer, String>();
-		opcoes.put(querDepositar, "depositar");
-		opcoes.put(querSacar, "sacar");
-		opcoes.put(querTransferir, "transferirPara");
-		opcoes.put(querSaldo, "saldo");
+		opcoes.put(querDepositar, OperacaoEnum.depositar.name());
+		opcoes.put(querSacar, OperacaoEnum.sacar.name());
+		opcoes.put(querTransferir, OperacaoEnum.transferir_para.name());
+		opcoes.put(querSaldo, OperacaoEnum.saldo.name());
 
 		if (opcoes.size() == 1) {
 
