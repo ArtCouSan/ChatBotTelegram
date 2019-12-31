@@ -3,9 +3,8 @@ Projeto para o MBA - Criação de bot  telegram
 
 # Utilização
 
-Run Java Application -> App
-No telegram web buscar pelo bot: 
-@rm336256_bot - Com o nome Telegram Digital Bank
+- Run Java Application -> App
+- No telegram web buscar pelo bot: @rm336256_bot - Com o nome Telegram Digital Bank
 
 Pronto, para iniciar uma sessão com o bot, digite seu cpf ou um cpf valido.
 
