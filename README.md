@@ -18,10 +18,10 @@ Comandos que podem ser usados:
 
 O sistema funciona com um pequena base de dados que age como uma IA para perguntas a respeito das transações: 
 
-- Exemplo: Quero depositar um valor"
+- Exemplo: "Quero depositar um valor"
 
 # Autor
 
 ```
-Arthur Coutinho Santos - RM 
+Arthur Coutinho Santos - RM 336256
 ```
