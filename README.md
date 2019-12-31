@@ -11,10 +11,10 @@ Pronto, para iniciar uma sessão com o bot, digite seu cpf ou um cpf valido.
 
 Comandos que podem ser usados:
 
-/menu - Apresenta menu
-/depositar - Depositar um valor na conta
-/sacar - Retirar um valor na conta
-/transferir_para - Transferi um valor
+- /menu - Apresenta menu
+- /depositar - Depositar um valor na conta
+- /sacar - Retirar um valor na conta
+- /transferir_para - Transferi um valor
 
 O sistema funciona com um pequena base de dados que age como uma IA para perguntas a respeito das transações: 
 
