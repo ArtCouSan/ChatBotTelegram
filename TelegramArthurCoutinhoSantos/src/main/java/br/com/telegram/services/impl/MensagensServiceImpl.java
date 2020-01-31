@@ -18,6 +18,9 @@ public class MensagensServiceImpl implements MensagensService {
 		return Arrays.asList(mensagens.split("/n"));
 	}
 
+	/**
+	 * Separa palavras recebidas
+	 */
 	@Override
 	public List<String> listarPalavrasRecebidas(List<String> linhas) {
 
@@ -32,6 +35,11 @@ public class MensagensServiceImpl implements MensagensService {
 		return palavras;
 	}
 
+	/**
+	 * Extrai operações na mensagem
+	 * @param palavras
+	 * @return
+	 */
 	public List<String> extrairOperacoes(List<String> palavras) {
 
 		List<String> operacoes = palavras.stream().filter(palavra -> palavra.substring(0, 1).equalsIgnoreCase("/"))
@@ -41,6 +49,10 @@ public class MensagensServiceImpl implements MensagensService {
 
 	}
 
+	/**
+	 * Mensagem de boas vindas
+	 * @return
+	 */
 	public String mensagemBoasVindas() {
 
 		LocalTime time = LocalTime.now();

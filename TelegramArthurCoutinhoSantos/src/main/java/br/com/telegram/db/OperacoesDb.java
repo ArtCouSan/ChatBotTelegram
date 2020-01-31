@@ -3,6 +3,11 @@ package br.com.telegram.db;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Classe para guardar infos de IA
+ * @author Arthu
+ *
+ */
 public class OperacoesDb {
 
 	public List<String> depositar = Arrays.asList("depositar", "guardar", "deposito");

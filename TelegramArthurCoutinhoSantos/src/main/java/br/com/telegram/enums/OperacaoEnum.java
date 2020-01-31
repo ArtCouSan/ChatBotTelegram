@@ -3,6 +3,11 @@ package br.com.telegram.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Classe que guarda as mensagens e operações
+ * @author Arthu
+ *
+ */
 public enum OperacaoEnum {
 
 	operacaoEmAberto("Termine a operação anterior ou encerre com o comando: /menu\n", -1),

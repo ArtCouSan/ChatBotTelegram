@@ -21,6 +21,9 @@ public class OperacaoServiceImpl implements OperacaoService {
 	private static Boolean primeiraVez = true;
 	private static BigDecimal saldo = new BigDecimal(0);
 
+	/**
+	 * Realiza operações principais
+	 */
 	@Override
 	public String executarOperacao(String mensagem) {
 
@@ -102,6 +105,11 @@ public class OperacaoServiceImpl implements OperacaoService {
 
 	}
 
+	/**
+	 * Verifica o que a mensagem quer pelas palavras
+	 * @param palavras
+	 * @return
+	 */
 	public String verificarOqueUsuarioQuerPelaMensagem(List<String> palavras) {
 
 		Integer querDepositar = 0;

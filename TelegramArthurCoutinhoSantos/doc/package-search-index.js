@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"br.com.telegram"},{"l":"br.com.telegram.db"},{"l":"br.com.telegram.enums"},{"l":"br.com.telegram.services"},{"l":"br.com.telegram.services.impl"},{"l":"br.com.TelegramArthurCoutinhoSantos"}]
